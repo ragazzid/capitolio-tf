@@ -18,21 +18,22 @@ class Instance:
         self.id = event['detail']['instance-id']
         self.region = event['region']
         self.details = event['detail']
-        self.ec2 = self.get_ec2_state(self.id)
-        self.tags = self.ec2['Instances'][0]['Tags']
-        self.private_ip = self.ec2['Instances'][0]['PrivateIpAddress']
-        self.public_ip = self.ec2['Instances'][0]['PublicIpAddress'] if 'PublicIpAddress' in self.ec2['Instances'][0] else ''
-        self.private_dns_name = self.ec2['Instances'][0]['PrivateDnsName']
-        self.private_host_name = self.private_dns_name.split('.')[0]
-        self.public = self.get_public_data()
-        self.subnet_id = self.ec2['Instances'][0]['SubnetId']
-        self.subnet = ec2.Subnet(self.subnet_id)
-        self.cidr_block = self.subnet.cidr_block
-        self.subnet_mask = int(self.cidr_block.split('/')[-1])
-        self.reversed_ip_address = reverse_list(self.private_ip)
-        self.reversed_domain_prefix = reverse_list(get_reversed_domain_prefix(self.subnet_mask, self.private_ip))
-        self.vpc_id = self.ec2['Instances'][0]['VpcId']
-        self.vpc = ec2.Vpc(self.vpc_id)
+        if self.details['state'] == 'running':
+            self.ec2 = self.get_ec2_state(self.id)
+            self.tags = self.ec2['Instances'][0]['Tags']
+            self.private_ip = self.ec2['Instances'][0]['PrivateIpAddress']
+            self.public_ip = self.ec2['Instances'][0]['PublicIpAddress'] if 'PublicIpAddress' in self.ec2['Instances'][0] else ''
+            self.private_dns_name = self.ec2['Instances'][0]['PrivateDnsName']
+            self.private_host_name = self.private_dns_name.split('.')[0]
+            self.public = self.get_public_data()
+            self.subnet_id = self.ec2['Instances'][0]['SubnetId']
+            self.subnet = ec2.Subnet(self.subnet_id)
+            self.cidr_block = self.subnet.cidr_block
+            self.subnet_mask = int(self.cidr_block.split('/')[-1])
+            self.reversed_ip_address = reverse_list(self.private_ip)
+            self.reversed_domain_prefix = reverse_list(get_reversed_domain_prefix(self.subnet_mask, self.private_ip))
+            self.vpc_id = self.ec2['Instances'][0]['VpcId']
+            self.vpc = ec2.Vpc(self.vpc_id)
 
     def should_i_run_it(self):
         for tag in self.tags:
