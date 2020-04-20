@@ -1,4 +1,4 @@
-data "aws_iam_policy_document" "dns_helper_role"{
+data "aws_iam_policy_document" "dns_helper_role" {
   statement {
     actions = [
       "sts:AssumeRole"

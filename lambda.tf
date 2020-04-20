@@ -5,8 +5,7 @@ data "archive_file" "lambda_zip" {
 }
 
 resource "aws_lambda_function" "dns_helper" {
-  filename         = "${path.module}/lambda.zip"
-
+  filename      = "${path.module}/lambda.zip"
   function_name = var.dns_helper
   role          = aws_iam_role.dns_helper.arn
   handler       = "main.handler"

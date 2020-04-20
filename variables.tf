@@ -16,7 +16,7 @@ variable "dynamo_arn" {
 }
 
 variable "hosted_zone" {
-    default = "*"
+  default = "*"
 }
 
 variable "timeout" {
