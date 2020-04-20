@@ -5,7 +5,7 @@ It receives an EC2 event:
 
 Based on the event, it creates or remove A record from a given DNS_ZONE based on the tag Name of an instance, if the instance belongs to an ASG it will add last 3 last ipv4 octets to the name
         
-## Variables
+## Variables for the Script
 
 | Name          | Description   | Mandatory | Default                |
 | -----------   | ------------- | --------- | ---------------------- |
@@ -15,7 +15,13 @@ Based on the event, it creates or remove A record from a given DNS_ZONE based on
 | PUBLIC        | Boolean       | NO        | False                  |
 | PUBLIC_PREFIX | String        | NO        | p-                     |
 
+** Variables for the Lambda
 
+| Name          | Description    | Mandatory | Default   |
+| -----------   | -------------  | --------- | --------- |
+| dynamo_arn    | used for IAM   | NO        | *         | 
+| hosted_zone   | used for IAM   | NO        | *         | 
+| dns_helper    | Lambda name    | NO        | capitolio |
 ## Deploy to AWS
 ### Terraform
 ```
