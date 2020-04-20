@@ -32,37 +32,31 @@ def handler(event, context):
         log.error("ps. Is the instance UP? Does it exist?")
         exit(127)
 
-    log.info(instance.ec2)
-
-    if not instance.should_i_run_it():
-        log.error("The instance doesn't have the tag NAME, I'm stopping here.")
-        exit(42)
-
     table = dynamo.setup()
     log.info('Got the table {}'.format(table))
 
     zone_name = route53.get_zone_nome(instance.tags)
 
     use_public_ip = os.environ['PUBLIC'] if 'PUBLIC' in os.environ else False
-    if use_public_ip:
-        public_ip = instance.public_ip
-        private_ip = instance.private_ip
-    else:
-        private_ip = instance.private_ip
-
-    if instance.belong_to_asg():
-        dns_name = route53.get_host_name(instance.tags, zone_name, private_ip)
-        if use_public_ip:
-            p_dns_name = route53.get_host_name(instance.tags, zone_name, public_ip).lower()
-            print(p_dns_name)
-        print(dns_name)
-    else:
-        dns_name = route53.get_host_name(instance.tags, zone_name, False).lower()
-
-    log.info("Zone\t{}".format(zone_name))
-    log.info("Name\t{}".format(dns_name))
 
     if instance.get_state() == 'running':
+        if use_public_ip:
+            public_ip = instance.public_ip
+            private_ip = instance.private_ip
+        else:
+            private_ip = instance.private_ip
+
+        if instance.belong_to_asg():
+            dns_name = route53.get_host_name(instance.tags, zone_name, private_ip)
+            if use_public_ip:
+                p_dns_name = route53.get_host_name(instance.tags, zone_name, public_ip).lower()
+                print(p_dns_name)
+            print(dns_name)
+        else:
+            dns_name = route53.get_host_name(instance.tags, zone_name, False).lower()
+
+        log.info("Zone\t{}".format(zone_name))
+        log.info("Name\t{}".format(dns_name))
         log.info("Adding records")
         dynamo.add_record(table, instance.ec2)
         try:
@@ -90,10 +84,18 @@ def handler(event, context):
             exit(127)
         if ec2.Instance.get_name_tag(instance.tags) == ec2.Instance.get_name_tag(d_instance_tags):
             log.info('Found matching Name tags, let us delete/remove it now :)')
+            if instance.belong_to_asg():
+                dns_name = route53.get_host_name(instance.tags, zone_name, d_private_address)
+            if use_public_ip:
+                p_dns_name = route53.get_host_name(instance.tags, zone_name, d_public_address).lower()
+                print(p_dns_name)
+                print(dns_name)
+            else:
+                dns_name = route53.get_host_name(instance.tags, zone_name, False).lower()
             try:
                 dynamo.remove_record(table, instance.id)
                 route53.delete_resource_record(dns_name, zone_name, 'A', d_private_address)
-                if public_ip:
+                if d_public_address:
                     if instance.belong_to_asg():
                         route53.delete_resource_record(p_dns_name, zone_name, 'A', d_public_address)
                     else:
@@ -109,7 +111,7 @@ if __name__ == '__main__':
         u'account': u'739171219021',
         u'region': u'us-east-1',
         u'detail':
-            {u'state': u'shutting-down', u'instance-id': u'i-001c5241cfc7f24e8'},
+            {u'state': u'shutting-down', u'instance-id': u'i-036218bd23c6b1120'},
         u'detail-type': u'EC2 Instance State-change Notification',
         u'source': u'aws.ec2',
         u'version': u'0',

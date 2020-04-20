@@ -18,9 +18,9 @@ class Instance:
         self.id = event['detail']['instance-id']
         self.region = event['region']
         self.details = event['detail']
+        self.ec2 = self.get_ec2_state(self.id)
+        self.tags = self.ec2['Instances'][0]['Tags']
         if self.details['state'] == 'running':
-            self.ec2 = self.get_ec2_state(self.id)
-            self.tags = self.ec2['Instances'][0]['Tags']
             self.private_ip = self.ec2['Instances'][0]['PrivateIpAddress']
             self.public_ip = self.ec2['Instances'][0]['PublicIpAddress'] if 'PublicIpAddress' in self.ec2['Instances'][0] else ''
             self.private_dns_name = self.ec2['Instances'][0]['PrivateDnsName']
