@@ -1,0 +1,10 @@
+name: Create Archive
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: montudor/action-zip@v0.1.0
+        with:
+          args: zip -qq -r ./source.zip ./
