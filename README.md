@@ -15,7 +15,7 @@ Based on the event, it creates or remove A record from a given DNS_ZONE based on
 | PUBLIC        | Boolean       | NO        | False                  |
 | PUBLIC_PREFIX | String        | NO        | p-                     |
 
-** Variables for the Lambda
+### Varibles related to the lambda
 
 | Name          | Description    | Mandatory | Default   |
 | -----------   | -------------  | --------- | --------- |
