@@ -24,7 +24,3 @@ resource "aws_iam_role_policy_attachment" "lambda" {
   policy_arn = aws_iam_policy.dns_helper.arn
 }
 
-
-output "role_info" {
-  value = aws_iam_role.dns_helper
-}
